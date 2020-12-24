@@ -34,3 +34,5 @@ def test_delete():
     res = client.delete('/tutorials/3')
     assert res.status_code == 204
     assert not res.get_json()
+    res = client.get('/tutorials')
+    assert len(res.get_json()) == 2
