@@ -1,9 +1,25 @@
 from flask import Flask, jsonify, request
+import sqlalchemy as db
+from sqlalchemy.orm import sessionmaker, scoped_session
+from sqlalchemy import create_engine
+from sqlalchemy.ext.declarative import declarative_base
+
 
 app = Flask(__name__)
 
 client = app.test_client()
 
+engine = create_engine('sqlite:///db.sqlite')
+
+session = scoped_session(sessionmaker(autocommit=False, autoflush=False, bind=engine))
+# session.create_all()
+
+Base = declarative_base()
+Base.query = session.query_property()
+
+from models import *
+
+Base.metadata.create_all(bind=engine)
 
 tutorials = [
     {
@@ -52,6 +68,11 @@ def delete_item(tut_id):
 
     tutorials.pop(indx)
     return '', 204
+
+
+@app.teardown_appcontext
+def shutdown_session(exception=None):
+    session.remove()
 
 
 if __name__ == '__main__':
