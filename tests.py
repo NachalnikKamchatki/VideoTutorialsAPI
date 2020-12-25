@@ -1,38 +1,44 @@
 from app import client
+from models import *
 
 
 def test_get_list():
     res = client.get('/tutorials')
     assert res.status_code == 200
-    assert res.get_json()[0]['id'] == 1
-    assert len(res.get_json())
+    assert len(res.get_json()) == len(Video.query.all())
+
+# {
+#         'id': 1,
+#         'title': 'Video #1. Intro',
+#         'description': 'My first video'
+#     },
+#     {
+#         'id': 2,
+#         'title': 'Video #2. Yet one',
+#         'description': 'My second video'
+#     }
 
 
 def test_post():
     data = {
-        'id': 3,
-        'name': 'Video #3. Strings',
-        'description': 'About strings in python'
+        'name': 'Video #1. Intro',
+        'description': 'About python'
     }
     res = client.post('/tutorials', json=data)
     assert res.status_code == 200
-    assert res.get_json()[2]['id'] == 3
-    assert len(res.get_json()) == 3
+    assert res.get_json()['name'] == data['name']
 
 
 def test_put():
     data = {
-        'description': 'About Strings in python'
+        'description': 'About python and pythonic way'
     }
-    res = client.put('/tutorials/3', json=data)
+    res = client.put('/tutorials/1', json=data)
     assert res.status_code == 200
-    assert len(res.get_json()) == 3
-    assert 'Strings' in res.get_json()['description']
+    assert Video.query.get(1).description == 'About python and pythonic way'
 
 
 def test_delete():
-    res = client.delete('/tutorials/3')
+    res = client.delete('/tutorials/1')
     assert res.status_code == 204
-    assert not res.get_json()
-    res = client.get('/tutorials')
-    assert len(res.get_json()) == 2
+    assert Video.query.get(1) is None

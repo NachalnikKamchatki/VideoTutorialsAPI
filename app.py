@@ -12,7 +12,6 @@ client = app.test_client()
 engine = create_engine('sqlite:///db.sqlite')
 
 session = scoped_session(sessionmaker(autocommit=False, autoflush=False, bind=engine))
-# session.create_all()
 
 Base = declarative_base()
 Base.query = session.query_property()
@@ -21,52 +20,59 @@ from models import *
 
 Base.metadata.create_all(bind=engine)
 
-tutorials = [
-    {
-        'id': 1,
-        'title': 'Video #1. Intro',
-        'description': 'My first video'
-    },
-    {
-        'id': 2,
-        'title': 'Video #2. Yet one',
-        'description': 'My second video'
-    }
-]
 
 
 @app.route('/tutorials', methods=['GET'])
 def get_list():
-    return jsonify(tutorials)
+    videos = Video.query.all()
+    serialized = []
+    for video in videos:
+        serialized.append({
+            'id': video.id,
+            'name': video.name,
+            'description': video.description
+        })
+    return jsonify(serialized)
 
 
 @app.route('/tutorials', methods=['POST'])
 def update_list():
-    new_tutorial = request.json
-    tutorials.append(new_tutorial)
-    return jsonify(tutorials)
+    new_tutorial = Video(**request.json)
+    session.add(new_tutorial)
+    session.commit()
+    serialised = {
+            'id': new_tutorial.id,
+            'name': new_tutorial.name,
+            'description': new_tutorial.description
+    }
+    return jsonify(serialised)
 
 
 @app.route('/tutorials/<int:tut_id>', methods=['PUT'])
 def update_item(tut_id):
 
-    item = next((x for x in tutorials if x['id'] == tut_id), None)
+    item = Video.query.filter(Video.id == tut_id).first()
     params = request.json
     if not item:
         return {'message': 'No tutorials with id.'}, 400
-    item.update(params)
-    return jsonify(item)
+    for key, value in params.items():
+        setattr(item, key, value)
+    session.commit()
+    serialised = {
+        'id': item.id,
+        'name': item.name,
+        'description': item.description
+    }
+    return jsonify(serialised)
 
 
 @app.route('/tutorials/<int:tut_id>', methods=['DELETE'])
 def delete_item(tut_id):
-
-    indx, _ = next((x for x in enumerate(tutorials) if x[1]['id'] == tut_id), (None, None))
-
-    if not indx:
+    item = Video.query.filter(Video.id == tut_id).first()
+    if not item:
         return {'message': 'No tutorials with this id.'}, 400
-
-    tutorials.pop(indx)
+    session.delete(item)
+    session.commit()
     return '', 204
 
 
