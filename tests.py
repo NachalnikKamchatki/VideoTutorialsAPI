@@ -7,17 +7,6 @@ def test_get_list():
     assert res.status_code == 200
     assert len(res.get_json()) == len(Video.query.all())
 
-# {
-#         'id': 1,
-#         'title': 'Video #1. Intro',
-#         'description': 'My first video'
-#     },
-#     {
-#         'id': 2,
-#         'title': 'Video #2. Yet one',
-#         'description': 'My second video'
-#     }
-
 
 def test_post():
     data = {
