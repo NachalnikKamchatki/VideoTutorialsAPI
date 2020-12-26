@@ -9,6 +9,8 @@ from flask_jwt_extended import JWTManager
 from flask_apispec.extension import FlaskApiSpec
 
 from config import Config
+from logger import init_logger
+
 
 app = Flask(__name__)
 app.config.from_object(Config)
@@ -31,10 +33,23 @@ from models import *
 
 Base.metadata.create_all(bind=engine)
 
+logger = init_logger()
+
 
 @app.teardown_appcontext
 def shutdown_session(exception=None):
     session.remove()
+
+
+@app.errorhandler(422)
+def error_handler(err):
+    headers = err.data.get('headers', None)
+    messages = err.data.get('messages', ['Invalid request'])
+    logger.warning(f'Invalid input params {messages}')
+    if headers:
+        return jsonify({'message': messages}), 400, headers
+    else:
+        return jsonify({'message': messages}), 400
 
 
 from routes import *

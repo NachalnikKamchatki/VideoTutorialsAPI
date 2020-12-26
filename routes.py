@@ -3,7 +3,7 @@ from flask import jsonify
 from flask_apispec import use_kwargs, marshal_with
 from flask_jwt_extended import jwt_required, get_jwt_identity
 
-from app import app, session
+from app import app, session, logger
 from schemas import *
 from models import *
 
@@ -16,6 +16,9 @@ def get_list():
         user_id = get_jwt_identity()
         videos = Video.query.filter(Video.user_id == user_id).all()
     except Exception as e:
+        logger.warning(
+            f'user {user_id}: tutorials - read action failed with errors: {str(e)}\n'
+        )
         return {'message': str(e)}, 400
     return videos
 
@@ -31,6 +34,9 @@ def update_list(**kwargs):
         session.add(new_tutorial)
         session.commit()
     except Exception as e:
+        logger.warning(
+            f'user {user_id}: tutorials - create action failed with errors: {str(e)}\n'
+        )
         return {'message': str(e)}, 400
     return new_tutorial
 
@@ -50,6 +56,9 @@ def update_item(tut_id, **kwargs):
             setattr(item, key, value)
         session.commit()
     except Exception as e:
+        logger.warning(
+            f'user {user_id}: tutorials {tut_id} - update action failed with errors: {str(e)}\n'
+        )
         return {'message': str(e)}, 400
     return jsonify(item)
 
@@ -67,6 +76,9 @@ def delete_item(tut_id):
         session.delete(item)
         session.commit()
     except Exception as e:
+        logger.warning(
+            f'user {user_id}: tutorials {tut_id} - delete action failed with errors: {str(e)}\n'
+        )
         return {'message': str(e)}, 400
     return '', 204
 
@@ -80,6 +92,9 @@ def register(**kwargs):
         session.add(user)
         session.commit()
     except Exception as e:
+        logger.warning(
+            f'Registration failed with errors: {str(e)}\n'
+        )
         return {'message': str(e)}, 400
     token = user.get_token()
     return jsonify({'access_token': token})
@@ -93,6 +108,9 @@ def login(**kwargs):
         user = User.authenticate(**kwargs)
         token = user.get_token()
     except Exception as e:
+        logger.warning(
+            f'Login action with email {kwargs["email"]} failed with errors: {str(e)}\n'
+        )
         return {'message': str(e)}, 400
     return jsonify({'access_token': token})
 
