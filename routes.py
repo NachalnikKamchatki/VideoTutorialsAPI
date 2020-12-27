@@ -14,7 +14,7 @@ from models import *
 def get_list():
     try:
         user_id = get_jwt_identity()
-        videos = Video.query.filter(Video.user_id == user_id).all()
+        videos = Video.get_user_videos(user_id=user_id)
     except Exception as e:
         logger.warning(
             f'user {user_id}: tutorials - read action failed with errors: {str(e)}\n'
@@ -31,8 +31,7 @@ def update_list(**kwargs):
     try:
         user_id = get_jwt_identity()
         new_tutorial = Video(user_id=user_id, **kwargs)
-        session.add(new_tutorial)
-        session.commit()
+        new_tutorial.save_video()
     except Exception as e:
         logger.warning(
             f'user {user_id}: tutorials - create action failed with errors: {str(e)}\n'
@@ -48,13 +47,8 @@ def update_list(**kwargs):
 def update_item(tut_id, **kwargs):
     try:
         user_id = get_jwt_identity()
-        item = Video.query.filter(Video.id == tut_id,
-                                  Video.user_id == user_id).first()
-        if not item:
-            return {'message': 'No tutorials with id.'}, 400
-        for key, value in kwargs.items():
-            setattr(item, key, value)
-        session.commit()
+        item = Video.get_video(tut_id, user_id)
+        item.update_video(**kwargs)
     except Exception as e:
         logger.warning(
             f'user {user_id}: tutorials {tut_id} - update action failed with errors: {str(e)}\n'
@@ -69,12 +63,10 @@ def update_item(tut_id, **kwargs):
 def delete_item(tut_id):
     try:
         user_id = get_jwt_identity()
-        item = Video.query.filter(Video.id == tut_id,
-                                  Video.user_id == user_id).first()
+        item = Video.get_video(tut_id, user_id)
         if not item:
             return {'message': 'No tutorials with this id.'}, 400
-        session.delete(item)
-        session.commit()
+        item.delete_video()
     except Exception as e:
         logger.warning(
             f'user {user_id}: tutorials {tut_id} - delete action failed with errors: {str(e)}\n'

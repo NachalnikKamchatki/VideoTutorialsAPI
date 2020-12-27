@@ -1,12 +1,12 @@
 import sqlalchemy as db
 from sqlalchemy.orm import relationship
 
-from app import Base
-
 from flask_jwt_extended import create_access_token
 from datetime import timedelta
 
 from passlib.hash import bcrypt
+
+from app import Base, logger, session
 
 
 class Video(Base):
@@ -15,6 +15,52 @@ class Video(Base):
     name = db.Column(db.String(250), nullable=False)
     description = db.Column(db.String(500), nullable=False)
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
+
+    @classmethod
+    def get_user_videos(cls, user_id):
+        try:
+            videos = cls.query.filter(cls.user_id == user_id).all()
+            session.commit()
+        except Exception:
+            session.rollback()
+            raise
+        return videos
+
+    @classmethod
+    def get_video(cls, tut_id, user_id):
+        try:
+            item = cls.query.filter(cls.id == tut_id, cls.user_id == user_id).first()
+            if not item:
+                raise Exception('No tutorials with this id')
+        except Exception:
+            session.rollback()
+            raise
+        return item
+
+    def save_video(self):
+        try:
+            session.add(self)
+            session.commit()
+        except Exception:
+            session.rollback()
+            raise
+
+    def update_video(self, **kwargs):
+        try:
+            for key, value in kwargs.items():
+                setattr(self, key, value)
+            session.commit()
+        except Exception:
+            session.rollback()
+            raise
+
+    def delete_video(self):
+        try:
+            session.delete(self)
+            session.commit()
+        except Exception:
+            session.rollback()
+            raise
 
     def __repr__(self):
         return f'<Video {self.name}>'
