@@ -6,7 +6,7 @@ from datetime import timedelta
 
 from passlib.hash import bcrypt
 
-from app import Base, logger, session
+from app import Base, session
 
 
 class Video(Base):
