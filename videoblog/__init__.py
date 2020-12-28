@@ -8,8 +8,8 @@ from flask_jwt_extended import JWTManager
 
 from flask_apispec.extension import FlaskApiSpec
 
-from config import Config
-from logger import init_logger
+from .config import Config
+from .logger import init_logger
 
 
 app = Flask(__name__)
@@ -29,7 +29,7 @@ jwt = JWTManager(app)
 docs = FlaskApiSpec()
 docs.init_app(app)
 
-from models import *
+from .models import *
 
 Base.metadata.create_all(bind=engine)
 
@@ -41,26 +41,17 @@ def shutdown_session(exception=None):
     session.remove()
 
 
-@app.errorhandler(422)
-def error_handler(err):
-    headers = err.data.get('headers', None)
-    messages = err.data.get('messages', ['Invalid request'])
-    logger.warning(f'Invalid input params {messages}')
-    if headers:
-        return jsonify({'message': messages}), 400, headers
-    else:
-        return jsonify({'message': messages}), 400
+from videoblog.main.views import *
+from videoblog.users.views import *
+
+app.register_blueprint(videos)
+app.register_blueprint(users)
+
+docs.register(get_list, blueprint='videos')
+docs.register(update_list, blueprint='videos')
+docs.register(update_item, blueprint='videos')
+docs.register(delete_item, blueprint='videos')
+docs.register(register, blueprint='users')
+docs.register(login, blueprint='users')
 
 
-from routes import *
-
-docs.register(get_list)
-docs.register(update_list)
-docs.register(update_item)
-docs.register(delete_item)
-docs.register(register)
-docs.register(login)
-
-
-if __name__ == '__main__':
-    app.run(debug=True)

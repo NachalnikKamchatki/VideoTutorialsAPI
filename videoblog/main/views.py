@@ -1,14 +1,16 @@
-from flask import jsonify
+from flask import jsonify, Blueprint
 
 from flask_apispec import use_kwargs, marshal_with
 from flask_jwt_extended import jwt_required, get_jwt_identity
 
-from app import app, session, logger
-from schemas import *
-from models import *
+from videoblog import logger
+from videoblog.schemas import VideoSchema
+from videoblog.models import Video
+
+videos = Blueprint('videos', __name__)
 
 
-@app.route('/tutorials', methods=['GET'])
+@videos.route('/tutorials', methods=['GET'])
 @jwt_required
 @marshal_with(VideoSchema(many=True))
 def get_list():
@@ -23,7 +25,7 @@ def get_list():
     return videos
 
 
-@app.route('/tutorials', methods=['POST'])
+@videos.route('/tutorials', methods=['POST'])
 @jwt_required
 @use_kwargs(VideoSchema)
 @marshal_with(VideoSchema)
@@ -40,7 +42,7 @@ def update_list(**kwargs):
     return new_tutorial
 
 
-@app.route('/tutorials/<int:tut_id>', methods=['PUT'])
+@videos.route('/tutorials/<int:tut_id>', methods=['PUT'])
 @jwt_required
 @use_kwargs(VideoSchema)
 @marshal_with(VideoSchema)
@@ -57,7 +59,7 @@ def update_item(tut_id, **kwargs):
     return jsonify(item)
 
 
-@app.route('/tutorials/<int:tut_id>', methods=['DELETE'])
+@videos.route('/tutorials/<int:tut_id>', methods=['DELETE'])
 @jwt_required
 @marshal_with(VideoSchema)
 def delete_item(tut_id):
@@ -75,36 +77,15 @@ def delete_item(tut_id):
     return '', 204
 
 
-@app.route('/register', methods=['POST'])
-@use_kwargs(UserSchema)
-@marshal_with(AuthSchema)
-def register(**kwargs):
-    try:
-        user = User(**kwargs)
-        session.add(user)
-        session.commit()
-    except Exception as e:
-        logger.warning(
-            f'Registration failed with errors: {str(e)}\n'
-        )
-        return {'message': str(e)}, 400
-    token = user.get_token()
-    return jsonify({'access_token': token})
+@videos.errorhandler(422)
+def error_handler(err):
+    headers = err.data.get('headers', None)
+    messages = err.data.get('messages', ['Invalid request'])
+    logger.warning(f'Invalid input params {messages}')
+    if headers:
+        return jsonify({'message': messages}), 400, headers
+    else:
+        return jsonify({'message': messages}), 400
 
 
-@app.route('/login', methods=['POST'])
-@use_kwargs(UserSchema(only=('email', 'password')))
-@marshal_with(AuthSchema)
-def login(**kwargs):
-    try:
-        user = User.authenticate(**kwargs)
-        token = user.get_token()
-    except Exception as e:
-        logger.warning(
-            f'Login action with email {kwargs["email"]} failed with errors: {str(e)}\n'
-        )
-        return {'message': str(e)}, 400
-    return jsonify({'access_token': token})
-
-
-from app import docs
+from videoblog import docs

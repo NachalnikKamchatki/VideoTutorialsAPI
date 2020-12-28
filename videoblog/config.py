@@ -3,6 +3,7 @@ from apispec.ext.marshmallow import MarshmallowPlugin
 
 
 class Config:
+    DEBUG = True
     SECRET_KEY = "12345"
     APISPEC_SPEC = APISpec(
         title='videoblog',
