@@ -1,5 +1,6 @@
 from flask import Flask
 
+import sqlalchemy as db
 from sqlalchemy.orm import sessionmaker, scoped_session
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
@@ -24,10 +25,10 @@ session = scoped_session(sessionmaker(autocommit=False, autoflush=False, bind=en
 Base = declarative_base()
 Base.query = session.query_property()
 
-jwt = JWTManager(app)
+jwt = JWTManager()
 
 docs = FlaskApiSpec()
-docs.init_app(app)
+
 
 from .models import *
 
@@ -41,17 +42,12 @@ def shutdown_session(exception=None):
     session.remove()
 
 
-from videoblog.main.views import *
-from videoblog.users.views import *
+from videoblog.main.views import videos
+from videoblog.users.views import users
+
 
 app.register_blueprint(videos)
 app.register_blueprint(users)
 
-docs.register(get_list, blueprint='videos')
-docs.register(update_list, blueprint='videos')
-docs.register(update_item, blueprint='videos')
-docs.register(delete_item, blueprint='videos')
-docs.register(register, blueprint='users')
-docs.register(login, blueprint='users')
-
-
+docs.init_app(app)
+jwt.init_app(app)

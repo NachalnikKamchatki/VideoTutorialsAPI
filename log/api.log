@@ -2,3 +2,9 @@
 2020-12-26 22:41:44,155-logger-WARNING-user 1: tutorials - read action failed with errors: Error!!!!
 2020-12-27 20:11:22,053-logger-WARNING-user 2: tutorials 12 - update action failed with errors: No tutorials with this id
 
+2020-12-29 20:26:05,899-videoblog.logger-WARNING-Videos not found
+2020-12-29 20:27:13,069-videoblog.logger-WARNING-Videos not found
+2020-12-29 20:27:21,891-videoblog.logger-WARNING-Videos not found
+2021-01-01 20:11:12,359-videoblog.logger-WARNING-Invalid input params {'json': {'name': ['Missing data for required field.'], 'description': ['Missing data for required field.']}}
+2021-01-01 20:29:02,153-videoblog.logger-WARNING-Login action with email taniusha@test.ua failed with errors: No row was found for one()
+

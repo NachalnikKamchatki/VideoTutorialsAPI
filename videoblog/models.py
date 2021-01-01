@@ -17,9 +17,19 @@ class Video(Base):
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
 
     @classmethod
-    def get_user_videos(cls, user_id):
+    def get_user_list(cls, user_id):
         try:
             videos = cls.query.filter(cls.user_id == user_id).all()
+            session.commit()
+        except Exception:
+            session.rollback()
+            raise
+        return videos
+
+    @classmethod
+    def get_list(cls):
+        try:
+            videos = cls.query.all()
             session.commit()
         except Exception:
             session.rollback()
