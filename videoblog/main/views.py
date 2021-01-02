@@ -72,7 +72,7 @@ class VideoByIdView(BaseView):
                 f'user {user_id}: tutorials {tut_id} - update action failed with errors: {str(e)}\n'
             )
             return {'message': str(e)}, 400
-        return jsonify(item)
+        return item
 
     @jwt_required
     @marshal_with(VideoSchema)

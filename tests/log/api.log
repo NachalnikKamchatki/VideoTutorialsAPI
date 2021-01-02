@@ -1,0 +1,27 @@
+2021-01-02 20:26:52,307-videoblog.logger-WARNING-Registration failed with errors: (sqlite3.IntegrityError) UNIQUE constraint failed: users.email
+[SQL: INSERT INTO users (name, email, password) VALUES (?, ?, ?)]
+[parameters: ('TestUser', 'test@test.ua', '$2b$12$jgs3v3Jvio6agLeHTAbc7eCNxduVZW/g8kkw6gYE7BMq/qLa.l.tK')]
+(Background on this error at: http://sqlalche.me/e/13/gkpj)
+
+2021-01-02 20:28:07,010-videoblog.logger-WARNING-Registration failed with errors: (sqlite3.IntegrityError) UNIQUE constraint failed: users.email
+[SQL: INSERT INTO users (name, email, password) VALUES (?, ?, ?)]
+[parameters: ('TestUser', 'test@test.ua', '$2b$12$DyUp2TEYIAgMR.1Xv7W9YOjb3/5Nfdqq7yHULsS9OTY.UcSJ.ug6i')]
+(Background on this error at: http://sqlalche.me/e/13/gkpj)
+
+2021-01-02 20:30:14,594-videoblog.logger-WARNING-Invalid input params {'json': {'name': ['Unknown field.']}}
+2021-01-02 20:30:14,976-videoblog.logger-WARNING-Invalid input params {'json': {'name': ['Missing data for required field.']}}
+2021-01-02 21:49:49,776-videoblog.logger-WARNING-Invalid input params {'json': {'user_id': ['Unknown field.']}}
+2021-01-02 22:00:18,395-videoblog.logger-WARNING-Invalid input params {'json': {'user_id': ['Unknown field.']}}
+2021-01-02 22:00:19,402-videoblog.logger-WARNING-Invalid input params {'json': {'description': ['Missing data for required field.']}}
+2021-01-02 22:05:34,038-videoblog.logger-WARNING-Invalid input params {'json': {'user_id': ['Unknown field.']}}
+2021-01-02 22:05:34,997-videoblog.logger-WARNING-Invalid input params {'json': {'description': ['Missing data for required field.']}}
+2021-01-02 22:05:52,015-videoblog.logger-WARNING-Invalid input params {'json': {'user_id': ['Unknown field.']}}
+2021-01-02 22:05:53,003-videoblog.logger-WARNING-Invalid input params {'json': {'description': ['Missing data for required field.']}}
+2021-01-02 22:06:07,020-videoblog.logger-WARNING-Invalid input params {'json': {'user_id': ['Unknown field.']}}
+2021-01-02 22:06:08,022-videoblog.logger-WARNING-Invalid input params {'json': {'description': ['Missing data for required field.']}}
+2021-01-02 22:07:28,801-videoblog.logger-WARNING-Invalid input params {'json': {'user_id': ['Unknown field.']}}
+2021-01-02 22:09:02,741-videoblog.logger-WARNING-Invalid input params {'json': {'user_id': ['Unknown field.']}}
+2021-01-02 22:10:23,892-videoblog.logger-WARNING-Invalid input params {'json': {'user_id': ['Unknown field.']}}
+2021-01-02 22:10:24,883-videoblog.logger-WARNING-Invalid input params {'json': {'user_id': ['Unknown field.']}}
+2021-01-02 22:20:58,324-videoblog.logger-WARNING-Invalid input params {'json': {'user_id': ['Unknown field.']}}
+2021-01-02 23:38:59,981-videoblog.logger-WARNING-Invalid input params {'json': {'name': ['Missing data for required field.'], 'description': ['Missing data for required field.']}}
