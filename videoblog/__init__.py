@@ -12,7 +12,6 @@ from flask_apispec.extension import FlaskApiSpec
 from .config import Config
 from .logger import init_logger
 
-
 app = Flask(__name__)
 app.config.from_object(Config)
 
@@ -44,7 +43,6 @@ def shutdown_session(exception=None):
 
 from videoblog.main.views import videos
 from videoblog.users.views import users
-
 
 app.register_blueprint(videos)
 app.register_blueprint(users)
